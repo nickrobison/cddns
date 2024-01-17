@@ -1,2 +1,4 @@
 (library
- (name cddns))
+ (name lib)
+  (public_name cddns.lib)
+ (libraries ipaddr lwt))
