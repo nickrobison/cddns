@@ -19,7 +19,7 @@
  (name cddns)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends (ocaml (>= 5)) dune yojson cohttp-eio logs cmdliner)
+ (depends (ocaml (>= 5)) dune yojson cohttp-lwt-unix logs cmdliner ppx_deriving_yojson)
  (tags
   (topics "to describe" your project)))
 
