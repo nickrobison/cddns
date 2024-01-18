@@ -1,0 +1,13 @@
+{
+"source": {
+"id": "ipify",
+"name": "Default",
+"refresh": 30
+},
+"targets": [{
+"id": "logging",
+"name": "Test Logger",
+"config": {}
+}
+]
+}
