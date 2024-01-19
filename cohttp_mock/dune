@@ -1,0 +1,5 @@
+(library
+  (name cohttp_mock)
+  (public_name cddns.cohttp_mock)
+  (libraries cohttp-lwt routes)
+  (preprocess (pps lwt_ppx)))
