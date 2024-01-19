@@ -17,6 +17,8 @@ depends: [
   "logs"
   "cmdliner"
   "ppx_deriving_yojson"
+  "lwt_ppx" {with-test}
+  "routes" {with-test}
   "odoc" {with-doc}
 ]
 build: [
