@@ -5,7 +5,7 @@ let src = Logs.Src.create "cddns"
 
 module Log = (val Logs.src_log src : Logs.LOG)
 
-let _info fmt s = Log.info (fun m -> m fmt s)
+let info fmt s = Log.info (fun m -> m fmt s)
 
 let ( let* ) r f =
   match r with Error (`Msg e) -> raise (Invalid_argument e) | Ok o -> f o
@@ -34,15 +34,15 @@ let create_target stream (target_json : Config.target) =
   let target = T.create config target_json.name stream in
   T.run target
 
-let run cfg_file =
+let run cfg_file _logs =
   let config = load_cfg cfg_file in
-  Fmt.pr "I have a config named: %s\n" config.source.name;
+  info "I have a config named: %s\n" config.source.name;
   (* Create the event stream*)
   let stream, push = Lwt_stream.create () in
   let module S = (val Selector.source_of_id config.source.id) in
   (* Create the source *)
   let s = S.create config.source.name config.source.refresh push in
-  Fmt.pr "I have a source named: %s\n" (S.name s);
+  info "I have a source named: %s\n" (S.name s);
   let create_target' = create_target stream in
   (* Create the targets *)
   let running_targets = List.map create_target' config.targets in
@@ -51,7 +51,8 @@ let run cfg_file =
   let _ = Lwt_main.run d in
   ()
 
-let cddns_t = Term.(const run $ config_path)
+let logs = Logging.setup ()
+let cddns_t = Term.(const run $ config_path $ logs)
 
 let cmd =
   let doc = "Dynamic IP Address Update Utility" in

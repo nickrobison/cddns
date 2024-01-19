@@ -1,4 +1,4 @@
 (executable
  (public_name cddns)
  (name main)
- (libraries cddns.ipify logs cmdliner fmt.cli bos lwt lwt.unix))
+ (libraries cddns.ipify logs cmdliner fmt.cli bos lwt lwt.unix logs.fmt logs.cli fmt.tty))
