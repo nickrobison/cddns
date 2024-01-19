@@ -1,5 +1,6 @@
 let source_of_id = function
-  | "ipify" -> (module Ipify.Source : Lib.Source_intf.S)
+  | "ipify" ->
+      (module Ipify.Source.Make (Cohttp_lwt_unix.Client) : Lib.Source_intf.S)
   | _ -> raise (Invalid_argument "Unknown")
 
 let target_of_id = function
