@@ -21,6 +21,7 @@ module Make (C : Cohttp_lwt.S.Client) (T : Mirage_time.S) = struct
   [@@deriving of_yojson, show]
 
   let info fmt msg = Log.info (fun m -> m fmt msg)
+  let error fmt msg = Log.err (fun m -> m fmt msg)
   let id = "ipify"
   let name t = t.name
 
@@ -31,20 +32,33 @@ module Make (C : Cohttp_lwt.S.Client) (T : Mirage_time.S) = struct
 
   let request ?ctx () =
     let* resp, body' = C.get ?ctx (Uri.of_string "https://api.ipify.org") in
-    Fmt.pr "Response: %d\n" (resp |> Response.status |> Code.code_of_status);
-    let* body = body' |> Cohttp_lwt.Body.to_string in
-    Fmt.pr "Body: %s\n" body;
-    Lwt.return (Ipaddr.V4.of_string body)
+    let response_code = resp |> Response.status |> Code.code_of_status in
+    match Code.is_success response_code with
+    | false -> Lwt.return_error (`Source_failure "Failed!")
+    | true ->
+        Fmt.pr "Response: %d\n" (resp |> Response.status |> Code.code_of_status);
+        let* body = body' |> Cohttp_lwt.Body.to_string in
+        Fmt.pr "Body: %s\n" body;
+        Lwt.return (Ipaddr.V4.of_string body)
 
-  let rec repeat ?ctx push delay =
+  let rec repeat ?ctx push delay previous =
     let* _ = T.sleep_ns delay in
     let* ipv4 = request ?ctx () in
-    match ipv4 with
-    | Ok ipv4addr ->
-        print_endline "Pushing";
-        push (Some (Lib.Event.Init { ipv4addr; ipv6addr = None }));
-        repeat ?ctx push delay
-    | Error (`Msg m) -> raise (Invalid_argument m)
+    match (ipv4, previous) with
+    | Ok ipv4addr, None ->
+        let (r : Lib.Record.t) = { ipv4addr; ipv6addr = None } in
+        push (Some (Lib.Event.Init r));
+        repeat ?ctx push delay (Some r)
+    | Ok ipv4addr, Some prev ->
+        let (r : Lib.Record.t) = { ipv4addr; ipv6addr = None } in
+        if not (Lib.Record.equal prev r) then
+          push (Some (Lib.Event.Update (prev, r)))
+        else info "%s" "IP address unchanged, ignoring";
+        repeat ?ctx push delay (Some r)
+    | Error (`Msg m), _ -> raise (Invalid_argument m)
+    | Error (`Source_failure m), _ ->
+        error "Source request failed with: %s. Retrying" m;
+        repeat ?ctx push delay None
 
   let start ?ctx t =
     (* Do an initial fetch on startup*)
@@ -53,13 +67,14 @@ module Make (C : Cohttp_lwt.S.Client) (T : Mirage_time.S) = struct
     let* body = body' |> Cohttp_lwt.Body.to_string in
     Fmt.pr "Body: %s\n" body;
     let ipv4 = Ipaddr.V4.of_string body in
-    let _ =
+    let prev =
       match ipv4 with
       | Ok ipv4addr ->
-          print_endline "Pushing";
-          t.pusher (Some (Lib.Event.Init { ipv4addr; ipv6addr = None }))
+          let (r : Lib.Record.t) = { ipv4addr; ipv6addr = None } in
+          t.pusher (Some (Lib.Event.Init r));
+          r
       | Error (`Msg m) -> raise (Invalid_argument m)
     in
     info "Starting scheduled fetch every %d seconds" (Duration.to_sec t.refresh);
-    repeat ?ctx t.pusher t.refresh
+    repeat ?ctx t.pusher t.refresh (Some prev)
 end

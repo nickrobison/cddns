@@ -18,7 +18,9 @@ let success _switch () =
   let router = Routes.(one_of [ nil @--> get_success ]) in
   let ctx = Cohttp_mock.Client.ctx_of_router router in
   let stream, push = Lwt_stream.create () in
-  let ipify = I.create "test" (Duration.of_min 10) push in
+  let ipify =
+    I.create "test" { refresh = Duration.of_min 10; ipv4_only = true } push
+  in
   let _ = I.start ~ctx ipify in
   let* result = Lwt_stream.find (fun _ -> true) stream in
   match result with
@@ -33,7 +35,9 @@ let failure _switch () =
   let router = Routes.(one_of [ nil @--> get_failure ]) in
   let ctx = Cohttp_mock.Client.ctx_of_router router in
   let stream, push = Lwt_stream.create () in
-  let ipify = I.create "test" (Duration.of_min 10) push in
+  let ipify =
+    I.create "test" { refresh = Duration.of_min 10; ipv4_only = false } push
+  in
   let _ = I.start ~ctx ipify in
   let* result = Lwt_stream.find (fun _ -> true) stream in
   match result with
