@@ -1,5 +1,5 @@
 (library
  (name ipify)
  (public_name cddns.ipify)
- (libraries cddns.lib cohttp cohttp-lwt fmt yojson ppx_deriving_yojson.runtime logs)
+ (libraries cddns.lib cohttp cohttp-lwt fmt yojson ppx_deriving_yojson.runtime logs mirage-time-unix)
 (preprocess (pps ppx_deriving_yojson)))

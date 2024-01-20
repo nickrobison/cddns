@@ -1,5 +1,6 @@
 open! Lwt.Syntax
 open Alcotest
+module I = Ipify.Source.Make (Cohttp_mock.Client) (Time)
 
 let test_ip = Ipaddr.V4.of_string_exn "10.11.12.13"
 
@@ -16,7 +17,6 @@ let get_failure ?headers ?body meth =
 let success _switch () =
   let router = Routes.(one_of [ nil @--> get_success ]) in
   let ctx = Cohttp_mock.Client.ctx_of_router router in
-  let module I = Ipify.Source.Make (Cohttp_mock.Client) in
   let stream, push = Lwt_stream.create () in
   let ipify = I.create "test" (Duration.of_min 10) push in
   let _ = I.start ~ctx ipify in
@@ -32,7 +32,6 @@ let success _switch () =
 let failure _switch () =
   let router = Routes.(one_of [ nil @--> get_failure ]) in
   let ctx = Cohttp_mock.Client.ctx_of_router router in
-  let module I = Ipify.Source.Make (Cohttp_mock.Client) in
   let stream, push = Lwt_stream.create () in
   let ipify = I.create "test" (Duration.of_min 10) push in
   let _ = I.start ~ctx ipify in

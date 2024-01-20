@@ -1,5 +1,5 @@
 (library
  (name lib)
   (public_name cddns.lib)
- (libraries ipaddr lwt yojson duration ppx_deriving_yojson.runtime logs)
+ (libraries ipaddr lwt yojson duration ppx_deriving_yojson.runtime logs fmt)
  (preprocess (staged_pps ppx_import ppx_deriving_yojson ppx_deriving.show ppx_deriving.eq)))

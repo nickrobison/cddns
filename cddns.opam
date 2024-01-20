@@ -24,6 +24,7 @@ depends: [
   "alcotest_lwt" {with-test}
   "routes" {with-test}
   "lwt_ppx" {with-test}
+  "mirage-time-unix"
   "odoc" {with-doc}
 ]
 build: [

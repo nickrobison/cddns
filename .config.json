@@ -2,7 +2,7 @@
 "source": {
 "id": "ipify",
 "name": "Default",
-"refresh": 30
+"refresh": 2
 },
 "targets": [{
 "id": "logging",
