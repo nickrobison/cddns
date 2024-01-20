@@ -10,15 +10,20 @@ homepage: "https://github.com/nickrobison/cddns"
 doc: "https://url/to/documentation"
 bug-reports: "https://github.com/nickrobison/cddns/issues"
 depends: [
-  "ocaml" {>= "5"}
   "dune" {>= "3.11"}
+  "ocaml" {>= "5"}
+  "ipaddr"
   "yojson"
+  "ppx_import"
   "cohttp-lwt-unix"
+  "duration"
   "logs"
   "cmdliner"
   "ppx_deriving_yojson"
-  "lwt_ppx" {with-test}
+  "alcotest" {with-test}
+  "alcotest_lwt" {with-test}
   "routes" {with-test}
+  "lwt_ppx" {with-test}
   "odoc" {with-doc}
 ]
 build: [

@@ -1,0 +1,3 @@
+(test
+  (name main)
+  (libraries alcotest cddns.ipify cddns.cohttp_mock routes lwt.unix alcotest-lwt))
