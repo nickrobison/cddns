@@ -14,13 +14,20 @@ module Make (C : Cohttp_lwt.S.Client) (T : Mirage_time.S) = struct
     refresh : Duration.t;
   }
 
+  type config = {
+    refresh : Duration.t; [@of_yojson Lib.Converters.duration_of_yojson]
+    ipv4_only : (bool[@default true]); [@name "IPV4only"]
+  }
+  [@@deriving of_yojson, show]
+
   let info fmt msg = Log.info (fun m -> m fmt msg)
   let id = "ipify"
   let name t = t.name
 
-  let create name refresh pusher =
-    print_endline "Do start";
-    { name; pusher; refresh }
+  let create name config pusher =
+    Log.info (fun m ->
+        m "Creating source %s with config: %s" name (show_config config));
+    { name; pusher; refresh = config.refresh }
 
   let request ?ctx () =
     let* resp, body' = C.get ?ctx (Uri.of_string "https://api.ipify.org") in

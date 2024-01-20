@@ -40,8 +40,13 @@ let run cfg_file _logs =
   (* Create the event stream*)
   let stream, push = Lwt_stream.create () in
   let module S = (val Selector.source_of_id config.source.id) in
+  let src_config =
+    match S.config_of_yojson config.source.config with
+    | Ok c -> c
+    | Error e -> raise (Invalid_argument e)
+  in
   (* Create the source *)
-  let s = S.create config.source.name config.source.refresh push in
+  let s = S.create config.source.name src_config push in
   info "I have a source named: %s\n" (S.name s);
   let create_target' = create_target stream in
   (* Create the targets *)

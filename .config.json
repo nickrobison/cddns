@@ -1,13 +1,14 @@
 {
-"source": {
-"id": "ipify",
-"name": "Default",
-"refresh": 2
-},
-"targets": [{
-"id": "logging",
-"name": "Test Logger",
-"config": {}
-}
-]
+    "source": {
+        "id": "ipify",
+        "name": "Default",
+        "config": {
+            "refresh": 2
+        }
+    },
+    "targets": [{
+        "id": "logging",
+        "name": "Test Logger",
+        "config": {}
+    }]
 }
