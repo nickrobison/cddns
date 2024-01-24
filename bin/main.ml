@@ -29,6 +29,8 @@ let load_cfg file =
   | Error e -> raise (Invalid_argument e)
 
 let create_target stream (target_json : Config.target) =
+  Log.info (fun m ->
+      m "Creating target type: %s with name: %s" target_json.id target_json.name);
   let module T = (val Selector.target_of_id target_json.id) in
   let config = T.config_of_yojson target_json.config in
   match config with

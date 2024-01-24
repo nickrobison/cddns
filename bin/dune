@@ -1,4 +1,4 @@
 (executable
  (public_name cddns)
  (name main)
- (libraries cddns.ipify logs cmdliner fmt.cli bos lwt lwt.unix logs.fmt logs.cli fmt.tty cohttp-lwt-unix mirage-time-unix))
+ (libraries cddns.ipify cddns.cloudflare logs cmdliner fmt.cli bos lwt lwt.unix logs.fmt logs.cli fmt.tty cohttp-lwt-unix mirage-time-unix))
