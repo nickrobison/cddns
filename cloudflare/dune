@@ -1,0 +1,5 @@
+(library
+  (name cloudflare)
+  (public_name cddns.cloudflare)
+  (libraries cddns.lib ipaddr cohttp-lwt ppx_deriving_yojson.runtime logs mirage-time)
+  (preprocess (pps ppx_deriving_yojson ppx_deriving.show ppx_deriving.eq)))

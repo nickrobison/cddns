@@ -31,8 +31,11 @@ let load_cfg file =
 let create_target stream (target_json : Config.target) =
   let module T = (val Selector.target_of_id target_json.id) in
   let config = T.config_of_yojson target_json.config in
-  let target = T.create config target_json.name stream in
-  T.run target
+  match config with
+  | Ok c ->
+      let target = T.create c target_json.name stream in
+      T.run target
+  | Error e -> failwith e
 
 let run cfg_file _logs =
   let config = load_cfg cfg_file in
