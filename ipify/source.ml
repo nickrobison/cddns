@@ -62,10 +62,8 @@ module Make (C : Cohttp_lwt.S.Client) (T : Mirage_time.S) = struct
 
   let start ?ctx t =
     (* Do an initial fetch on startup*)
-    let* resp, body' = C.get ?ctx (Uri.of_string "https://api.ipify.org") in
-    Fmt.pr "Response: %d\n" (resp |> Response.status |> Code.code_of_status);
+    let* _resp, body' = C.get ?ctx (Uri.of_string "https://api.ipify.org") in
     let* body = body' |> Cohttp_lwt.Body.to_string in
-    Fmt.pr "Body: %s\n" body;
     let ipv4 = Ipaddr.V4.of_string body in
     let prev =
       match ipv4 with

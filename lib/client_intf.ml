@@ -3,6 +3,7 @@ module type S = sig
     [ `Network_error of int * string
     | `Parse_error of string
     | `Other_error of string ]
+  [@@deriving show]
 
   type t
   type ctx
@@ -12,11 +13,19 @@ module type S = sig
   val get :
     ?ctx:ctx ->
     ?headers:Cohttp.Header.t ->
-    string ->
+    Uri.t ->
     'a parser ->
     ('a, [> error ]) result Lwt.t
 
   val put :
+    ?ctx:ctx ->
+    ?headers:Cohttp.Header.t ->
+    Uri.t ->
+    'a encoder ->
+    'a ->
+    (unit, [> error ]) result Lwt.t
+
+  val patch :
     ?ctx:ctx ->
     ?headers:Cohttp.Header.t ->
     Uri.t ->

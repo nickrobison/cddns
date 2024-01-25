@@ -12,7 +12,7 @@ let config_of_yojson _json = Ok ()
 let create _config name stream = { name; stream }
 let id = "logging"
 let name t = t.name
-let log event = info "%s" (Event.show event)
+let log event = Log.info (fun m -> m "Received event: %a" Event.pp event)
 
 let run ?ctx:_ t =
   info "Starting target: %s" t.name;
