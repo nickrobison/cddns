@@ -55,7 +55,9 @@ module Make (C : Cohttp_lwt.S.Client) (T : Mirage_time.S) = struct
           push (Some (Lib.Event.Update (prev, r)))
         else info "%s" "IP address unchanged, ignoring";
         repeat ?ctx push delay (Some r)
-    | Error (`Msg m), _ -> raise (Invalid_argument m)
+    | Error (`Msg m), _ ->
+        error "Source request failed with: %s. Retrying" m;
+        repeat ?ctx push delay None
     | Error (`Source_failure m), _ ->
         error "Source request failed with: %s. Retrying" m;
         repeat ?ctx push delay None
@@ -70,9 +72,11 @@ module Make (C : Cohttp_lwt.S.Client) (T : Mirage_time.S) = struct
       | Ok ipv4addr ->
           let (r : Lib.Record.t) = { ipv4addr; ipv6addr = None } in
           t.pusher (Some (Lib.Event.Init r));
-          r
-      | Error (`Msg m) -> raise (Invalid_argument m)
+          Some r
+      | Error (`Msg m) ->
+          t.pusher (Some (Lib.Event.Failure m));
+          None
     in
     info "Starting scheduled fetch every %d seconds" (Duration.to_sec t.refresh);
-    repeat ?ctx t.pusher t.refresh (Some prev)
+    repeat ?ctx t.pusher t.refresh prev
 end

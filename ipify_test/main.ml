@@ -41,10 +41,8 @@ let failure _switch () =
   let _ = I.start ~ctx ipify in
   let* result = Lwt_stream.find (fun _ -> true) stream in
   match result with
-  | Some (Init record) ->
-      check string "IPv4"
-        (Ipaddr.V4.to_string test_ip)
-        (Ipaddr.V4.to_string record.ipv4addr);
+  | Some (Failure msg) ->
+      check string "Failure message" "Ipaddr: invalid character 'b' at 0" msg;
       Lwt.return_unit
   | _ -> Lwt.return (failwith "Nope")
 

@@ -115,7 +115,10 @@ module Make (C : Client_intf.S) = struct
     | Some r -> (
         match update with
         | Update (_old, new') -> do_update ?ctx t r new'
-        | Init rr -> do_update ?ctx t r rr)
+        | Init rr -> do_update ?ctx t r rr
+        | Failure msg ->
+            error "Source update failed with: %s. Ignoring." msg;
+            Lwt.return_unit)
     | None -> (
         debug "Looking up zone: %s" t.config.zone_name;
         let* zone = find_zone ?ctx t in
