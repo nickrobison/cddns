@@ -12,6 +12,7 @@ bug-reports: "https://github.com/nickrobison/cddns/issues"
 depends: [
   "dune" {>= "3.11"}
   "ocaml" {>= "5"}
+  "lwt_ssl"
   "ipaddr"
   "yojson"
   "ppx_import"
@@ -21,7 +22,7 @@ depends: [
   "cmdliner"
   "ppx_deriving_yojson"
   "alcotest" {with-test}
-  "alcotest_lwt" {with-test}
+  "alcotest-lwt" {with-test}
   "routes" {with-test}
   "lwt_ppx" {with-test}
   "mirage-time-unix"

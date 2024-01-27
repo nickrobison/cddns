@@ -19,7 +19,7 @@
  (name cddns)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends (ocaml (>= 5)) ipaddr yojson ppx_import cohttp-lwt-unix duration logs cmdliner ppx_deriving_yojson (alcotest :with-test) (alcotest_lwt :with-test) (routes :with-test) (lwt_ppx :with-test) mirage-time-unix)
+ (depends (ocaml (>= 5)) lwt_ssl ipaddr yojson ppx_import cohttp-lwt-unix duration logs cmdliner ppx_deriving_yojson (alcotest :with-test) (alcotest-lwt :with-test) (routes :with-test) (lwt_ppx :with-test) mirage-time-unix)
  (tags
   (topics "to describe" your project)))
 

@@ -30,10 +30,11 @@
           ocamlformat = "*";
         };
         query = devPackagesQuery // {
-          ocaml-base-compiler = "*";
+          ocaml-base-compiler = "5.1.1";
+          cohttp-lwt-unix = "5.3.0";
         };
         on = opam-nix.lib.${system};
-        scope = on.buildOpamProject' {} ./. query;
+        scope = on.buildOpamProject' {resolveArgs.with-test = true;} ./. query;
         overlay = final: prev: {
           ${package} = prev.${package}.overrideAttrs (_: {
             # Prevent the ocaml dependencies from leaking into dependent environments
@@ -46,8 +47,17 @@
         # Packages from devPackagesQuery
         devPackages = builtins.attrValues
           (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope');
+        dockerImage = pkgs.dockerTools.buildLayeredImage {
+          name = "nickrobison/cddns";
+          tag = "latest";
+          contents = [main];
+        };
         in {
-          packages.default = main;
+          packages = {
+            default = main;
+            dockerImage = dockerImage;
+          };
+          formatter = pkgs.nixpkgs-fmt;
           devShells.default = pkgs.mkShell {
             inputsFrom = [main];
             buildInputs = devPackages ++ [
